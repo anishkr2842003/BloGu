@@ -20,28 +20,34 @@
                             <th>Delete</th> -->
                         </thead>
                         <tbody>
-                            <% var count = 1; %>
-                            <% users.forEach(function(user){ %>
+                            <% var count = (currentPage - 1) * perPage + 1; %>
+                            <% users.forEach(function(user, index){ %>
                             <tr>
-                                <td class='id'><%= count %></td>
+                                <td class='id'><%= count + index %></td>
                                 <td><%= user.fname + user.lname %></td>
                                 <td><%= user.username %></td>
                                 <td><%= user.posts.length %></td>
                                 <!-- <td class='edit'><a href='update-user.php'><i class='fa fa-edit'></i></a></td>
                                 <td class='delete'><a href='delete-user.php'><i class='fa fa-trash-o'></i></a></td> -->
                             </tr>
-                            <% count++ %>
                             <% }) %>
                         </tbody>
                     </table>
                     <%}else{%> 
                         <h3>No user found</h3>
                         <%} %>
-                  <!-- <ul class='pagination admin-pagination'>
-                      <li class="active"><a>1</a></li>
-                      <li><a>2</a></li>
-                      <li><a>3</a></li>
-                  </ul> -->
+                        <ul class='pagination admin-pagination'>
+                    
+                            <% for (let i = 1; i <= runLoop; i++) { %>
+                                <% var active = '' %>
+                                <% if(currentPage == i){active = 'active'}else{active = ''} %>
+                                <li class="<%= active %>"><a href="/admin/user?page=<%= i %>"><%= i %></a></li>
+                                
+                            <% } %>
+                              
+                              <!-- <li><a href="/admin/post?page=2">2</a></li>
+                              <li><a href="/admin/post?page=3">3</a></li> -->
+                          </ul>
               </div>
           </div>
       </div>

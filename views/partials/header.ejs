@@ -43,8 +43,9 @@
           <div class="col-md-12">
             <ul class="menu">
               <% categories.forEach(function(category){ %>
-              <li><a href="/"><%= category.name %></a></li>
-              <%}) %>
+                <% if(category.posts.length > 0 ){ %>
+              <li><a href="/category/<%= category._id %>"><%= category.name %></a></li>
+              <% }}) %>
             </ul>
           </div>
         </div>

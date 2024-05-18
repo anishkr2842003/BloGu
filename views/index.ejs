@@ -19,16 +19,13 @@
                   <div class="post-information">
                     <span>
                       <i class="fa fa-tags" aria-hidden="true"></i>
-                      <% if(post.category.name){ %>
-                        <a href=""><%= post.category.name %></a>
-                      <% }else{ %>
-                        <a href="">unknown</a>
-                      <% } %>
-                      <a href=""></a>
+                      
+                        <a href="/category/<%= post.category._id %>"><%= post.category.name %></a>
+                      
                     </span>
                     <span>
                       <i class="fa fa-user" aria-hidden="true"></i>
-                      <a href=""><%= post.user.username %></a>
+                      <a href="/author/<%= post.user._id %>"><%= post.user.username %></a>
                     </span>
                     <span>
                       <i class="fa fa-calendar" aria-hidden="true"></i>
@@ -51,11 +48,18 @@
           <h3>No post found</h3>
           <% } %>
 
-          <!-- <ul class='pagination'>
-                            <li class="active"><a href="">1</a></li>
-                            <li><a href="">2</a></li>
-                            <li><a href="">3</a></li>
-                        </ul> -->
+          <ul class='pagination admin-pagination'>
+                    
+            <% for (let i = 1; i <= runLoop; i++) { %>
+                <% var active = '' %>
+                <% if(currentPage == i){active = 'active'}else{active = ''} %>
+                <li class="<%= active %>"><a href="/?page=<%= i %>"><%= i %></a></li>
+                
+            <% } %>
+              
+              <!-- <li><a href="/admin/post?page=2">2</a></li>
+              <li><a href="/admin/post?page=3">3</a></li> -->
+          </ul>
         </div>
         <!-- /post-container -->
       </div>

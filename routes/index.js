@@ -13,8 +13,11 @@ const upload = require("../utils/multer");
 
 /* GET home page. */
 router.get("/", async function (req, res) {
+  var currentPage = req.query.page || 1;
+  var perPage = 10;
+
   var posts = await postModel
-    .find()
+    .find().skip((currentPage - 1)* perPage).limit(perPage)
     .populate("user")
     .populate("category")
     .sort({ date: -1 });
@@ -26,7 +29,12 @@ router.get("/", async function (req, res) {
     .populate("user")
     .populate("category");
   var cookie = req.cookies;
-  res.render("index", { cookie, posts, categories, limitedPosts });
+
+  var totalPosts = await postModel.find();
+  var runLoop = Math.ceil(totalPosts.length / perPage)
+
+
+  res.render("index", { cookie, posts, categories, limitedPosts, currentPage, runLoop });
 });
 
 /* GET login page. */
@@ -59,24 +67,40 @@ router.get("/post/:postId", async function (req, res) {
 
 /* GET admin post page. */
 router.get("/admin/post", isLoggedIn, async function (req, res) {
-  // var username = req.cookies.username;
-  // console.log(username);
+  var currentPage = req.query.page || 1;
+  var perPage = 10;
 
-  var posts = await postModel.find().populate("category").populate("user");
+  var username = req.cookies.username;
+  var user = await userModel.findOne({username: username});
+  var posts = await postModel.find({user: user._id}).skip((currentPage - 1)* perPage).limit(perPage).populate('category').populate('user');
+  var totalPosts = await postModel.find({user: user._id});
+  var runLoop = Math.ceil(totalPosts.length / perPage)
 
-  res.render("admin/post", { posts });
+  res.render("admin/post", { posts,runLoop, currentPage, perPage });
 });
 
 /* GET admin category page. */
 router.get("/admin/category", isLoggedIn, async function (req, res) {
-  var categories = await categoryModel.find();
-  res.render("admin/category", { categories });
+  var currentPage = req.query.page || 1;
+  var perPage = 10;
+
+  var categories = await categoryModel.find().skip((currentPage - 1)* perPage).limit(perPage);
+  var totalCategory = await categoryModel.find();
+  var runLoop = Math.ceil(totalCategory.length / perPage)
+
+  res.render("admin/category", { categories, runLoop, currentPage, perPage });
 });
 
 /* GET admin post page. */
 router.get("/admin/user", isLoggedIn, async function (req, res) {
-  var users = await userModel.find();
-  res.render("admin/users", { users });
+  var currentPage = req.query.page || 1;
+  var perPage = 10;
+
+  var users = await userModel.find().skip((currentPage - 1)* perPage).limit(perPage);
+  var totalUsers = await userModel.find();
+  var runLoop = Math.ceil(totalUsers.length / perPage);
+
+  res.render("admin/users", { users, runLoop, currentPage, perPage });
 });
 
 /* GET admin post-create page. */
@@ -210,13 +234,6 @@ router.get("/post/delete/:postId", isLoggedIn, async function (req, res) {
   res.redirect("/admin/post");
 });
 
-/* GET logout page. */
-/* GET logout page. */
-router.get("/logout", function (req, res) {
-  res.cookie("token", "", { maxAge: 0 });
-  res.cookie("username", "", { maxAge: 0 });
-  res.redirect("/");
-});
 
 
 /* GET edit post page */
@@ -252,19 +269,40 @@ router.post('/post/update',isLoggedIn,upload.single("new-image"), async function
 
 });
 
+/* GET category page. */
+router.get("/category/:catId", async function (req, res) {
+  
+  var catId = req.params.catId;
+  var categories = await categoryModel.find();
 
+  var limitedPosts = await postModel
+    .find()
+    .limit(5)
+    .sort({ date: -1 })
+    .populate("user")
+    .populate("category");
+  var cookie = req.cookies;
 
+  var catPosts = await categoryModel.findOne({ _id: catId }).populate({path: 'posts',populate: { path: 'user' }});
+  res.render("category", { cookie, categories, limitedPosts, catPosts });
+});
 
+/* GET author page. */
+router.get("/author/:authId", async function (req, res) {
+  
+  var authId = req.params.authId;
+  var categories = await categoryModel.find();
 
+  var limitedPosts = await postModel
+    .find()
+    .limit(5)
+    .sort({ date: -1 })
+    .populate("user")
+    .populate("category");
+  var cookie = req.cookies;
 
-
-
-
-
-
-/* GET error page. */
-router.get("*", function (req, res) {
-  res.render("error");
+  var authPosts = await userModel.findOne({ _id: authId }).populate({path: 'posts',populate: { path: 'category' }});
+  res.render("author", { cookie, categories, limitedPosts, authPosts });
 });
 
 
@@ -272,6 +310,18 @@ router.get("*", function (req, res) {
 
 
 
+
+/* GET logout page. */
+router.get("/logout", function (req, res) {
+  res.cookie("token", "", { maxAge: 0 });
+  res.cookie("username", "", { maxAge: 0 });
+  res.redirect("/");
+});
+
+/* GET error page. */
+router.get("*", function (req, res) {
+  res.render("error");
+});
 
 /* FUNCTION check user is login or not */
 function isLoggedIn(req, res, next) {

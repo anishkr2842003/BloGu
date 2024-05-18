@@ -30,17 +30,17 @@
         <img src="/images/uploads/<%= post.photo %>" alt="" />
       </a>
       <div class="post-content">
-        <h5><a href="/post/<"><%= post.title %></a></h5>
+        <h5><a href="/post/<%= post._id %>"><%= post.title %></a></h5>
         <span>
           <i class="fa fa-tags" aria-hidden="true"></i>
-          <a href="category.php"><%= post.category.name %></a>
+          <a href="/category/<%= post.category._id %>"><%= post.category.name %></a>
         </span>
         <span>
           <i class="fa fa-calendar" aria-hidden="true"></i>
           <%= new Date(post.date).toLocaleDateString('en-US', { day: 'numeric',
           month: 'short', year: 'numeric' }) %>
         </span>
-        <a class="read-more" href="single.php">read more</a>
+        <a class="read-more" href="/post/<%= post._id %>">read more</a>
       </div>
     </div>
     <% }) %>
