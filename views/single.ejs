@@ -1,0 +1,40 @@
+<% include ./partials/header.ejs %>
+<div id="main-content">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+        <!-- post-container -->
+        <div class="post-container">
+          <div class="post-content single-post">
+            <h3><%= post.title %></h3>
+            <div class="post-information">
+              <span>
+                <i class="fa fa-tags" aria-hidden="true"></i>
+                <%= post.category.name %>
+              </span>
+              <span>
+                <i class="fa fa-user" aria-hidden="true"></i>
+                <a href=""><%= post.user.username %></a>
+              </span>
+              <span>
+                <i class="fa fa-calendar" aria-hidden="true"></i>
+                <%= new Date(post.date).toLocaleDateString('en-US', { day:
+                'numeric', month: 'short', year: 'numeric' }) %>
+              </span>
+            </div>
+            <img
+              class="single-feature-image"
+              src="/images/uploads/<%= post.photo %>"
+              alt=""
+            />
+            <!-- <p class="description"><%= post.desc %></p> -->
+            <pre class="description"><%- post.desc %></pre>
+          </div>
+        </div>
+        <!-- /post-container -->
+      </div>
+      <% include sidebar.ejs %>
+    </div>
+  </div>
+</div>
+<% include ./partials/footer.ejs %>

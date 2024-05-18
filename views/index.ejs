@@ -1,0 +1,61 @@
+<% include ./partials/header.ejs %>
+<div id="main-content">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+        <!-- post-container -->
+        <div class="post-container">
+          <% if(posts.length > 0){ %> <% posts.forEach(function (post) { %>
+          <div class="post-content">
+            <div class="row">
+              <div class="col-md-4">
+                <a class="post-img" href=""
+                  ><img src="/images/uploads/<%= post.photo %>" alt=""
+                /></a>
+              </div>
+              <div class="col-md-8">
+                <div class="inner-content clearfix">
+                  <h3><a href="/post/<%= post._id %>"><%= post.title %></a></h3>
+                  <div class="post-information">
+                    <span>
+                      <i class="fa fa-tags" aria-hidden="true"></i>
+                      <a href=""><%= post.category.name %></a>
+                    </span>
+                    <span>
+                      <i class="fa fa-user" aria-hidden="true"></i>
+                      <a href=""><%= post.user.username %></a>
+                    </span>
+                    <span>
+                      <i class="fa fa-calendar" aria-hidden="true"></i>
+                      <%= new Date(post.date).toLocaleDateString('en-US', { day:
+                      'numeric', month: 'short', year: 'numeric' }) %>
+                    </span>
+                  </div>
+                  <p class="description">
+                    <% desc = post.desc %> <%= desc.split(' ').slice(0,
+                    30).join(' ') %>...
+                  </p>
+                  <a class="read-more pull-right" href="/post/<%= post._id %>"
+                    >read more</a
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          <% }) %> <% }else{%>
+          <h3>No post found</h3>
+          <% } %>
+
+          <!-- <ul class='pagination'>
+                            <li class="active"><a href="">1</a></li>
+                            <li><a href="">2</a></li>
+                            <li><a href="">3</a></li>
+                        </ul> -->
+        </div>
+        <!-- /post-container -->
+      </div>
+      <% include sidebar.ejs %>
+    </div>
+  </div>
+</div>
+<% include ./partials/footer.ejs %>
