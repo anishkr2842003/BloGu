@@ -17,7 +17,7 @@
                             <th>Category</th>
                             <th>Date</th>
                             <th>Author</th>
-                            <!-- <th>Edit</th> -->
+                            <th>Edit</th>
                             <th>Delete</th>
                         </thead>
                         <tbody>
@@ -29,7 +29,7 @@
                                     <td><%= post.category.name %></td>
                                     <td><%= new Date(post.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></td>
                                     <td><%= post.user.username %></td>
-                                    <!-- <td class='edit'><a href='update-post.php'><i class='fa fa-edit'></i></a></td> -->
+                                    <td class='edit'><a href='/post/edit/<%= post._id %>'><i class='fa fa-edit'></i></a></td>
                                     <td class='delete'><a href='/post/delete/<%= post._id %>'><i class='fa fa-trash-o'></i></a></td>
                                 </tr>
                                 <% count++ %>

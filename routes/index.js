@@ -156,11 +156,7 @@ router.post("/admin/create-category", isLoggedIn, async function (req, res) {
 });
 
 /* POST admin post-create page. */
-router.post(
-  "/admin/create-post",
-  isLoggedIn,
-  upload.single("photo"),
-  async function (req, res) {
+router.post("/admin/create-post",isLoggedIn,upload.single("photo"),async function (req, res) {
     var title = req.body.title;
     var desc = req.body.desc;
     var category = req.body.category;
@@ -223,10 +219,55 @@ router.get("/logout", function (req, res) {
 });
 
 
+/* GET edit post page */
+router.get('/post/edit/:postId', async function(req,res){
+  var postId = req.params.postId;
+  var post = await postModel.findOne({_id: postId}).populate('category');
+  var catId = post.category
+  var category = await categoryModel.find();
+  res.render('./admin/update-post', {post, category})
+});
+
+/* POST edit post page */
+router.post('/post/update',isLoggedIn,upload.single("new-image"), async function(req,res){
+
+  var postId = req.body.post_id
+  var title = req.body.post_title
+  var desc = req.body.postdesc
+  var photo = req.file
+  
+  if(photo == undefined){
+    photo = req.body.oldimage
+  }else{
+    photo = req.file.filename
+  }
+
+  const post = await postModel.findOneAndUpdate({_id: postId},{
+    title: title,
+    desc: desc,
+    photo: photo,
+  },{new: true});
+
+  res.redirect('/admin/post')
+
+});
+
+
+
+
+
+
+
+
+
+
+
 /* GET error page. */
 router.get("*", function (req, res) {
   res.render("error");
 });
+
+
 
 
 
