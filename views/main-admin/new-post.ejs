@@ -1,0 +1,47 @@
+<% include header.ejs %>
+  <div id="admin-content">
+      <div class="container">
+          <div class="row">
+              <div class="col-md-10">
+                  <h1 class="admin-heading">All Posts</h1>
+              </div>
+              <div class="col-md-2">
+                  <!-- <a class="add-new" href="/admin/create-post">add post</a> -->
+              </div>
+              <div class="col-md-12">
+                  <% if(posts.length > 0){ %>
+                    <table class="content-table">
+                        <thead>
+                            <th>S.No.</th>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Date</th>
+                            <th>Author</th>
+                            <th>Status</th>
+                            <th>Delete</th>
+                        </thead>
+                        <tbody>
+                            <% var count = 1; %>
+                            <% posts.forEach(function(post, index){%>
+                                
+                                <tr>
+                                    <td class='id'><%= count %></td>
+                                    <td><a href="/main-admin/post/<%= post._id %>"><%= post.title %></a></td>
+                                    <td><%= post.category.name %></td>
+                                    <td><%= new Date(post.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %></td>
+                                    <td><%= post.user.username %></td>
+                                    <td class='edit'><a href='#'><% if(post.status == 'false'){%>Not Approved<%} %></a></td>
+                                    <td class='delete'><a href='/main-admin/post/delete/<%= post._id %>'><i class='fa fa-trash-o'></i></a></td>
+                                </tr>
+                                <% count++; %>
+                                <%}) %>
+                        </tbody>
+                    </table>
+                    <% }else{ %>
+                        <h3>No posts found</h3>
+                        <% } %>
+              </div>
+          </div>
+      </div>
+  </div>
+  <% include footer.ejs %>

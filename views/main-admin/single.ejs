@@ -1,0 +1,46 @@
+<% include header.ejs %>
+<div id="main-content">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+        <!-- post-container -->
+        <div class="post-container">
+          <div class="post-content single-post">
+            <h3><%= post.title %></h3>
+            <div class="post-information">
+              <span>
+                <i class="fa fa-tags" aria-hidden="true"></i>
+                <a href="/category/<%= post.category._id %>"><%= post.category.name %></a>
+              </span>
+              <span>
+                <i class="fa fa-user" aria-hidden="true"></i>
+                <a href="/author/<%= post.user._id %>"><%= post.user.username %></a>
+              </span>
+              <span>
+                <i class="fa fa-calendar" aria-hidden="true"></i>
+                <%= new Date(post.date).toLocaleDateString('en-US', { day:
+                'numeric', month: 'short', year: 'numeric' }) %>
+              </span>
+            </div>
+            <img
+              class="single-feature-image"
+              src="/images/uploads/<%= post.photo %>"
+              alt=""
+            />
+            <!-- <p class="description"><%= post.desc %></p> -->
+            <pre class="description"><%- post.desc %></pre>
+          </div>
+          <div class="search-box-container">
+            <!-- <h4>Account</h4> -->
+            <div class="btn-group btn-group-justified" role="group" aria-label="...">
+              <a href="/main-admin/approve<%= post._id %>" class="btn btn-default">Approve</a>
+              <a href="/main-admin/post/delete/<%= post._id %>" class="btn btn-default active">Delete</a>
+            </div>
+          </div>
+        </div>
+        <!-- /post-container -->
+      </div>
+    </div>
+  </div>
+</div>
+<% include footer.ejs %>

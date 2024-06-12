@@ -17,20 +17,20 @@ router.get("/", async function (req, res) {
   var perPage = 10;
 
   var posts = await postModel
-    .find().skip((currentPage - 1)* perPage).limit(perPage)
+    .find({status: 'true'}).skip((currentPage - 1)* perPage).limit(perPage)
     .populate("user")
     .populate("category")
     .sort({ date: -1 });
   var categories = await categoryModel.find();
   var limitedPosts = await postModel
-    .find()
+    .find({status: 'false'})
     .limit(5)
     .sort({ date: -1 })
     .populate("user")
     .populate("category");
   var cookie = req.cookies;
 
-  var totalPosts = await postModel.find();
+  var totalPosts = posts;
   var runLoop = Math.ceil(totalPosts.length / perPage)
 
 
@@ -44,7 +44,7 @@ router.get("/login", function (req, res) {
 
 /* GET signup page. */
 router.get("/signup", function (req, res) {
-  res.render("admin/signup");
+  res.render("admin/signup",{message: req.flash("message") });
 });
 
 /* GET single page. */
@@ -56,7 +56,7 @@ router.get("/post/:postId", async function (req, res) {
     .populate("category")
     .populate("user");
   var limitedPosts = await postModel
-    .find()
+    .find({status: 'false'})
     .limit(5)
     .sort({ date: -1 })
     .populate("user")
@@ -115,14 +115,19 @@ router.get("/admin/create-category", isLoggedIn, async function (req, res) {
 });
 
 /* POST signup page. */
-router.post("/signup", function (req, res) {
+router.post("/signup", async function (req, res) {
   var fname = req.body.firstname;
   var lname = req.body.lastname;
   var username = req.body.username;
   var password = req.body.password;
   var role = req.body.role;
 
-  // Password ko encrypt karna
+  var user = await userModel.findOne({username: username});
+  if(user){
+    req.flash("message", "This username is already taken. Chooese another");
+    res.redirect('/signup')
+  }else{
+    // Password ko encrypt karna
   bcrypt.genSalt(10, function (err, salt) {
     bcrypt.hash(password, salt, async function (err, hash) {
       await userModel.create({
@@ -135,6 +140,11 @@ router.post("/signup", function (req, res) {
       res.redirect("/login");
     });
   });
+  }
+
+
+
+  
 });
 
 /* POST login page. */
@@ -276,7 +286,7 @@ router.get("/category/:catId", async function (req, res) {
   var categories = await categoryModel.find();
 
   var limitedPosts = await postModel
-    .find()
+    .find({status: 'false'})
     .limit(5)
     .sort({ date: -1 })
     .populate("user")
@@ -305,8 +315,96 @@ router.get("/author/:authId", async function (req, res) {
   res.render("author", { cookie, categories, limitedPosts, authPosts });
 });
 
+// Main Admin page
+
+/* GET admin post page. */
+router.get("/main-admin/post", async function (req, res) {
 
 
+  var posts = await postModel.find({status: 'true'}).populate('category').populate('user');
+
+  res.render("main-admin/post", { posts });
+});
+
+/* GET admin post page. */
+router.get("/main-admin/new-post", async function (req, res) {
+
+
+  var posts = await postModel.find({status: false}).populate('category').populate('user');
+
+  res.render("main-admin/new-post", { posts });
+});
+
+/* GET admin single page */
+router.get("/main-admin/post/:postId", async function (req, res) {
+  var postId = req.params.postId;
+  var post = await postModel
+    .findOne({ _id: postId })
+    .populate("category")
+    .populate("user");
+  var cookie = req.cookies;
+  res.render("main-admin/single", { cookie, post });
+});
+
+/* Approve post */
+router.get("/main-admin/approve:postId", async function(req,res){
+  var postId = req.params.postId;
+  const post = await postModel.findOneAndUpdate({_id: postId},{
+    status: true,
+  },{new: true});
+  res.redirect('/main-admin/post');
+
+})
+
+/* Main-admin delete post */
+router.get("/main-admin/post/delete/:postId", async function(req,res){
+  var postId = req.params.postId;
+  var post = await postModel.findOne({ _id: postId });
+  var user = await userModel.findOne({ _id: post.user });
+  var category = await categoryModel.findOne({ _id: post.category });
+
+  await postModel.deleteOne({ _id: postId });
+
+  let posts = user.posts;
+  var indexToRemove = posts.indexOf(postId);
+  if (indexToRemove !== -1) {
+    posts.splice(indexToRemove, 1);
+  }
+
+  let categories = category.posts
+  var indexToRemoveCategory = categories.indexOf(postId)
+  if (indexToRemove !== -1) {
+    categories.splice(indexToRemoveCategory, 1);
+  }
+
+  await user.save();
+  await category.save();
+  res.redirect("/main-admin/post");
+})
+
+/* GET admin category page. */
+router.get("/main-admin/category", async function (req, res) {
+  var currentPage = req.query.page || 1;
+  var perPage = 10;
+
+  var categories = await categoryModel.find().skip((currentPage - 1)* perPage).limit(perPage);
+  var totalCategory = await categoryModel.find();
+  var runLoop = Math.ceil(totalCategory.length / perPage)
+
+  res.render("main-admin/category", { categories, runLoop, currentPage, perPage });
+});
+
+/* GET admin post page. */
+router.get("/main-admin/user", async function (req, res) {
+  var currentPage = req.query.page || 1;
+  var perPage = 10;
+
+  var users = await userModel.find().skip((currentPage - 1)* perPage).limit(perPage);
+  var totalUsers = await userModel.find();
+  var runLoop = Math.ceil(totalUsers.length / perPage);
+
+  res.render("main-admin/users", { users, runLoop, currentPage, perPage });
+});
 
 
 

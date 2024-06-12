@@ -12,6 +12,10 @@ const postSchema = mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    status: {
+        type: String,
+        default: 'false'
+    },
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'category'
