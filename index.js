@@ -13,15 +13,9 @@ const app = express();
 
 // Connect to MongoDB
 const dbURI = process.env.DBURI;
-mongoose.connect(dbURI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    // Increase buffer timeout
-    bufferCommands: false,
-    bufferTimeoutMS: 10000, // Adjust timeout as needed
-  })
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error('MongoDB connection error:', err));
+mongoose.connect(dbURI)
+.then(() => console.log('MongoDB connected'))
+.catch(err => console.error('MongoDB connection error:', err));
 
 // Middleware setup
 app.use(bodyParser.urlencoded({ extended: false }));
