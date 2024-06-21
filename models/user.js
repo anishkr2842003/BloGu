@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 
-
-mongoose.connect("mongodb://127.0.0.1:27017/news-cms");
+// mongoose.connect("mongodb://127.0.0.1:27017/news-cms");
 
 const userSchema = mongoose.Schema({
   fname: String,
