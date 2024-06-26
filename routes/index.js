@@ -23,7 +23,7 @@ router.get("/", async function (req, res) {
     .sort({ date: -1 });
   var categories = await categoryModel.find();
   var limitedPosts = await postModel
-    .find({status: 'false'})
+    .find({status: 'true'})
     .limit(5)
     .sort({ date: -1 })
     .populate("user")
@@ -405,6 +405,17 @@ router.get("/main-admin/user", async function (req, res) {
 
   res.render("main-admin/users", { users, runLoop, currentPage, perPage });
 });
+
+router.get('/category/delete/:categoryId', async function(req,res){
+
+  var categoryId = req.params.categoryId;
+  var totalPost = await categoryModel.find({ _id: categoryId });
+  var posts = totalPost[0].posts
+  posts.forEach((e)=>{
+    console.log(e.toHexString());
+  })
+
+})
 
 
 
