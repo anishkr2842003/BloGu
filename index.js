@@ -10,16 +10,11 @@ require('dotenv').config();
 
 // Initialize Express app
 const app = express();
+console.log('DBURI:', process.env.DBURI);
 
 // Connect to MongoDB
 const dbURI = process.env.DBURI;
-mongoose.connect(dbURI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    // Increase buffer timeout
-    bufferCommands: false,
-    bufferTimeoutMS: 10000, // Adjust timeout as needed
-  })
+mongoose.connect(dbURI,  { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
