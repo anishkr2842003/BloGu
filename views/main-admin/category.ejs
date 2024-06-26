@@ -18,8 +18,8 @@
                                 <th>S.No.</th>
                                 <th>Category Name</th>
                                 <th>No. of Posts</th>
-                                <!-- <th>Edit</th>
-                                <th>Delete</th> -->
+                                <!-- <th>Edit</th> -->
+                                <th>Delete</th> 
                             </thead>
                             <tbody>
                                 <% var count = (currentPage - 1) * perPage + 1; %>
@@ -28,8 +28,8 @@
                                     <td class='id'><%= count + index %></td>
                                     <td><%= category.name %></td>
                                     <td><%= category.posts.length %></td>
-                                    <!-- <td class='edit'><a href='update-category.php'><i class='fa fa-edit'></i></a></td>
-                                    <td class='delete'><a href='delete-category.php'><i class='fa fa-trash-o'></i></a></td> -->
+                                    <!-- <td class='edit'><a href=''><i class='fa fa-edit'></i></a></td>-->
+                                    <td class='delete'><a href='/category/delete/<%= category._id %>'><i class='fa fa-trash-o'></i></a></td> 
                                 </tr>
                                 <% }) %>
                             </tbody>

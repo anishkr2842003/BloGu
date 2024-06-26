@@ -425,6 +425,17 @@ router.get("/main-admin/user", async function (req, res) {
   res.render("main-admin/users", { users, runLoop, currentPage, perPage, currentPath });
 });
 
+router.get('/category/delete/:categoryId', async function(req,res){
+
+  var categoryId = req.params.categoryId;
+  var totalPost = await categoryModel.find({ _id: categoryId });
+  var posts = totalPost[0].posts
+  posts.forEach((e)=>{
+    console.log(e.toHexString());
+  })
+
+})
+
 
 
 
