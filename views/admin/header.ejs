@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>ADMIN Panel</title>
+    <title>User Panel</title>
     <!-- Bootstrap -->
     <link rel="stylesheet" href="/stylesheets/bootstrap.min.css" />
     <!-- Font Awesome Icon -->
@@ -48,15 +48,16 @@
           <div class="col-md-12">
             <ul class="admin-menu">
               <li>
-                <a href="/admin/post">Post</a>
+                <a href="/admin/post" class="<%= currentPath === '/admin/post'? 'active' : '' %>">Post</a>
               </li>
               <li>
-                <a href="/admin/category">Category</a>
+                <a href="/admin/category" class="<%= currentPath === '/admin/category'? 'active' : '' %>">Category</a>
               </li>
-              <li>
+              <!-- <li>
                 <a href="/admin/user">Users</a>
-              </li>
+              </li> -->
             </ul>
+            <ul>Welcome <%= username %></ul>
           </div>
         </div>
       </div>

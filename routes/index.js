@@ -31,10 +31,10 @@ router.get("/", async function (req, res) {
   var cookie = req.cookies;
 
   var totalPosts = posts;
-  var runLoop = Math.ceil(totalPosts.length / perPage)
+  var runLoop = Math.ceil(totalPosts.length / perPage);
 
-
-  res.render("index", { cookie, posts, categories, limitedPosts, currentPage, runLoop });
+  var currentPath = req.path;
+  res.render("index", { cookie, posts, categories, limitedPosts, currentPage, runLoop, currentPath });
 });
 
 /* GET login page. */
@@ -56,13 +56,15 @@ router.get("/post/:postId", async function (req, res) {
     .populate("category")
     .populate("user");
   var limitedPosts = await postModel
-    .find({status: 'false'})
+    .find({status: 'true'})
     .limit(5)
     .sort({ date: -1 })
     .populate("user")
     .populate("category");
   var cookie = req.cookies;
-  res.render("single", { cookie, post, categories, limitedPosts });
+
+  var currentPath = req.path;
+  res.render("single", { cookie, post, categories, limitedPosts, currentPath });
 });
 
 /* GET admin post page. */
@@ -75,8 +77,9 @@ router.get("/admin/post", isLoggedIn, async function (req, res) {
   var posts = await postModel.find({user: user._id}).skip((currentPage - 1)* perPage).limit(perPage).populate('category').populate('user');
   var totalPosts = await postModel.find({user: user._id});
   var runLoop = Math.ceil(totalPosts.length / perPage)
+  var currentPath = req.path;
 
-  res.render("admin/post", { posts,runLoop, currentPage, perPage });
+  res.render("admin/post", { posts,runLoop, currentPage, perPage, currentPath, username });
 });
 
 /* GET admin category page. */
@@ -84,34 +87,40 @@ router.get("/admin/category", isLoggedIn, async function (req, res) {
   var currentPage = req.query.page || 1;
   var perPage = 10;
 
+  var username = req.cookies.username;
   var categories = await categoryModel.find().skip((currentPage - 1)* perPage).limit(perPage);
   var totalCategory = await categoryModel.find();
   var runLoop = Math.ceil(totalCategory.length / perPage)
+  var currentPath = req.path;
 
-  res.render("admin/category", { categories, runLoop, currentPage, perPage });
+  res.render("admin/category", { categories, runLoop, currentPage, perPage, currentPath, username });
 });
 
 /* GET admin post page. */
-router.get("/admin/user", isLoggedIn, async function (req, res) {
-  var currentPage = req.query.page || 1;
-  var perPage = 10;
+// router.get("/admin/user", isLoggedIn, async function (req, res) {
+//   var currentPage = req.query.page || 1;
+//   var perPage = 10;
 
-  var users = await userModel.find().skip((currentPage - 1)* perPage).limit(perPage);
-  var totalUsers = await userModel.find();
-  var runLoop = Math.ceil(totalUsers.length / perPage);
+//   var users = await userModel.find().skip((currentPage - 1)* perPage).limit(perPage);
+//   var totalUsers = await userModel.find();
+//   var runLoop = Math.ceil(totalUsers.length / perPage);
 
-  res.render("admin/users", { users, runLoop, currentPage, perPage });
-});
+//   res.render("admin/users", { users, runLoop, currentPage, perPage });
+// });
 
 /* GET admin post-create page. */
 router.get("/admin/create-post", isLoggedIn, async function (req, res) {
   var categories = await categoryModel.find();
-  res.render("admin/add-post", { categories });
+
+  var username = req.cookies.username;
+  var currentPath = req.path
+  res.render("admin/add-post", { categories, currentPath, username });
 });
 
 /* GET admin category-create page. */
-router.get("/admin/create-category", isLoggedIn, async function (req, res) {
-  res.render("admin/add-category");
+router.get("/main-admin/create-category", isLoggedIn, async function (req, res) {
+  var currentPath = req.path;
+  res.render("main-admin/add-category", {currentPath});
 });
 
 /* POST signup page. */
@@ -175,7 +184,7 @@ router.post("/login", async function (req, res) {
 });
 
 /* POST admin category-create page. */
-router.post("/admin/create-category", isLoggedIn, async function (req, res) {
+router.post("/main-admin/create-category", isLoggedIn, async function (req, res) {
   var categoryName = req.body.cat;
   var username = req.cookies.username;
   let user = await userModel.findOne({ username: username });
@@ -186,7 +195,7 @@ router.post("/admin/create-category", isLoggedIn, async function (req, res) {
 
   user.category.push(category._id);
   await user.save();
-  res.redirect("/admin/category");
+  res.redirect("/main-admin/category");
 });
 
 /* POST admin post-create page. */
@@ -252,7 +261,10 @@ router.get('/post/edit/:postId', async function(req,res){
   var post = await postModel.findOne({_id: postId}).populate('category');
   var catId = post.category
   var category = await categoryModel.find();
-  res.render('./admin/update-post', {post, category})
+
+  var username = req.cookies.username;
+  var currentPath = req.path;
+  res.render('./admin/update-post', {post, category, currentPath, username })
 });
 
 /* POST edit post page */
@@ -286,7 +298,7 @@ router.get("/category/:catId", async function (req, res) {
   var categories = await categoryModel.find();
 
   var limitedPosts = await postModel
-    .find({status: 'false'})
+    .find({status: 'true'})
     .limit(5)
     .sort({ date: -1 })
     .populate("user")
@@ -294,7 +306,9 @@ router.get("/category/:catId", async function (req, res) {
   var cookie = req.cookies;
 
   var catPosts = await categoryModel.findOne({ _id: catId }).populate({path: 'posts',populate: { path: 'user' }});
-  res.render("category", { cookie, categories, limitedPosts, catPosts });
+
+  var currentPath = req.path;
+  res.render("category", { cookie, categories, limitedPosts, catPosts, currentPath });
 });
 
 /* GET author page. */
@@ -322,8 +336,9 @@ router.get("/main-admin/post", async function (req, res) {
 
 
   var posts = await postModel.find({status: 'true'}).populate('category').populate('user');
-
-  res.render("main-admin/post", { posts });
+  var currentPath = req.path;
+  
+  res.render("main-admin/post", { posts, currentPath });
 });
 
 /* GET admin post page. */
@@ -331,8 +346,9 @@ router.get("/main-admin/new-post", async function (req, res) {
 
 
   var posts = await postModel.find({status: false}).populate('category').populate('user');
+  var currentPath = req.path;
 
-  res.render("main-admin/new-post", { posts });
+  res.render("main-admin/new-post", { posts, currentPath });
 });
 
 /* GET admin single page */
@@ -343,7 +359,8 @@ router.get("/main-admin/post/:postId", async function (req, res) {
     .populate("category")
     .populate("user");
   var cookie = req.cookies;
-  res.render("main-admin/single", { cookie, post });
+  var currentPath = req.path;
+  res.render("main-admin/single", { cookie, post, currentPath });
 });
 
 /* Approve post */
@@ -389,9 +406,10 @@ router.get("/main-admin/category", async function (req, res) {
 
   var categories = await categoryModel.find().skip((currentPage - 1)* perPage).limit(perPage);
   var totalCategory = await categoryModel.find();
-  var runLoop = Math.ceil(totalCategory.length / perPage)
+  var runLoop = Math.ceil(totalCategory.length / perPage);
+  var currentPath = req.path;
 
-  res.render("main-admin/category", { categories, runLoop, currentPage, perPage });
+  res.render("main-admin/category", { categories, runLoop, currentPage, perPage, currentPath });
 });
 
 /* GET admin post page. */
@@ -402,8 +420,9 @@ router.get("/main-admin/user", async function (req, res) {
   var users = await userModel.find().skip((currentPage - 1)* perPage).limit(perPage);
   var totalUsers = await userModel.find();
   var runLoop = Math.ceil(totalUsers.length / perPage);
+  var currentPath = req.path;
 
-  res.render("main-admin/users", { users, runLoop, currentPage, perPage });
+  res.render("main-admin/users", { users, runLoop, currentPage, perPage, currentPath });
 });
 
 router.get('/category/delete/:categoryId', async function(req,res){

@@ -16,6 +16,8 @@ button:focus{
     outline: none;
 }
 
+
+
 ul{
     margin:0;
     padding:0;
@@ -82,7 +84,24 @@ img.logo{
     transition: all 0.3s;
 }
 
+#admin-menubar .col-md-12{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #1E90FF;
+    font-size: 16px;
+    font-weight: 600;
+    /* text-transform: uppercase; */
+    /* padding: 7px 15px; */
+    transition: all 0.3s;
+}
+
 #admin-menubar .admin-menu li a:hover{
+    color: #fff;
+    background-color: #1E90FF;
+}
+
+#admin-menubar .admin-menu li a.active{
     color: #fff;
     background-color: #1E90FF;
 }

@@ -10,12 +10,13 @@ require('dotenv').config();
 
 // Initialize Express app
 const app = express();
+console.log('DBURI:', process.env.DBURI);
 
 // Connect to MongoDB
 const dbURI = process.env.DBURI;
-mongoose.connect(dbURI)
-.then(() => console.log('MongoDB connected'))
-.catch(err => console.error('MongoDB connection error:', err));
+mongoose.connect(dbURI,  { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 // Middleware setup
 app.use(bodyParser.urlencoded({ extended: false }));
