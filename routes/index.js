@@ -369,7 +369,7 @@ router.get("/main-admin/approve:postId", async function(req,res){
   const post = await postModel.findOneAndUpdate({_id: postId},{
     status: true,
   },{new: true});
-  res.redirect('/main-admin/post');
+  res.redirect('/main-admin/new-post');
 
 })
 
@@ -428,11 +428,29 @@ router.get("/main-admin/user", async function (req, res) {
 router.get('/category/delete/:categoryId', async function(req,res){
 
   var categoryId = req.params.categoryId;
-  var totalPost = await categoryModel.find({ _id: categoryId });
-  var posts = totalPost[0].posts
-  posts.forEach((e)=>{
-    console.log(e.toHexString());
+  var category = await categoryModel.find({ _id: categoryId });
+  var posts = category[0].posts;
+  var userId = category[0].user;
+
+  postModel.deleteMany({_id: {$in: posts}})
+  .then((result)=>{
+    console.log(`${result.deletedCount} documents deleted`);
   })
+  .catch((error)=>{
+    console.log('Error deleting documents:', error);
+  })
+
+  await categoryModel.deleteOne({_id: categoryId});
+
+  var user = await userModel.find({_id: userId});
+  var userPosts = user[0].posts;
+
+  user[0].posts = user[0].posts.filter(userpost => !posts.some(catpost => userpost.toString() === catpost.toString()));
+
+  await user[0].save();
+  // console.log(userPosts);
+
+  res.redirect('/main-admin/category')
 
 })
 
