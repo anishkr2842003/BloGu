@@ -1,0 +1,48 @@
+<div id="sidebar" class="col-md-4">
+  <% if(!cookie.token) { %>
+  <!-- search box -->
+  <div class="search-box-container">
+    <h4>Account</h4>
+    <div class="btn-group btn-group-justified" role="group" aria-label="...">
+      <a href="/login" class="btn btn-default">Login</a>
+      <a href="/signup" class="btn btn-default active">Sign Up</a>
+    </div>
+  </div>
+  <!-- /search box -->
+  <% }else{ %>
+  <!-- logout -->
+  <div class="search-box-container">
+    <h4>Account</h4>
+    <div class="btn-group btn-group-justified" role="group" aria-label="...">
+      <a href="/admin/post" class="btn btn-default">Dashboard</a>
+      <a href="/logout" class="btn btn-default active">Logout</a>
+    </div>
+  </div>
+  <!-- /logout -->
+  <% } %>
+  <!-- recent posts box -->
+  <div class="recent-post-container">
+    <h4>Recent Posts</h4>
+    <% limitedPosts.forEach(function(post){ %>
+    <div class="recent-post">
+      <a class="post-img" href="">
+        <img src="/images/uploads/<%= post.photo %>" alt="" />
+      </a>
+      <div class="post-content">
+        <h5><a href="/post/<%= post._id %>"><%= post.title %></a></h5>
+        <span>
+          <i class="fa fa-tags" aria-hidden="true"></i>
+          <a href="/category/<%= post.category._id %>"><%= post.category.name %></a>
+        </span>
+        <span>
+          <i class="fa fa-calendar" aria-hidden="true"></i>
+          <%= new Date(post.date).toLocaleDateString('en-US', { day: 'numeric',
+          month: 'short', year: 'numeric' }) %>
+        </span>
+        <a class="read-more" href="/post/<%= post._id %>">read more</a>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+  <!-- /recent posts box -->
+</div>
