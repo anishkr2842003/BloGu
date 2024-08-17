@@ -3,15 +3,14 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const flash = require('connect-flash');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-require('dotenv').config();
+require('dotenv').config()
 
 // Initialize Express app
 const app = express();
-console.log('DBURI:', process.env.DBURI);
-
 // Connect to MongoDB
 const dbURI = process.env.DBURI;
 mongoose.connect(dbURI)
@@ -23,9 +22,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(session({
-  secret: 'secret',
+  secret: 'yourSecret',
   resave: false,
   saveUninitialized: true,
+  store: MongoStore.create({ mongoUrl: dbURI })
 }));
 app.use(flash());
 
